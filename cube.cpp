@@ -34,7 +34,7 @@
 #include "cube.h"
 
 #ifndef wxHAS_IMAGES_IN_RESOURCES
-    #include "../../../../samples/sample.xpm"
+    #include "../wxWidgets/samples/sample.xpm"
 #endif
 
 // ----------------------------------------------------------------------------

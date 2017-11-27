@@ -5,8 +5,8 @@
 ## Debug
 ProjectName            :=cube
 ConfigurationName      :=Debug
-WorkspacePath          :=/home/tchv/StartPP/StartPP
-ProjectPath            :=/home/tchv/wxWidgets-3.1.0/build-linux-debug/samples/opengl/cube
+WorkspacePath          :=/home/tchv/cube
+ProjectPath            :=/home/tchv/cube
 IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
@@ -93,7 +93,7 @@ PreBuild:
 ## Objects
 ##
 $(IntermediateDirectory)/cube.cpp$(ObjectSuffix): cube.cpp $(IntermediateDirectory)/cube.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/wxWidgets-3.1.0/build-linux-debug/samples/opengl/cube/cube.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/cube.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/cube/cube.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/cube.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/cube.cpp$(DependSuffix): cube.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/cube.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/cube.cpp$(DependSuffix) -MM cube.cpp
 
@@ -101,7 +101,7 @@ $(IntermediateDirectory)/cube.cpp$(PreprocessSuffix): cube.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/cube.cpp$(PreprocessSuffix) cube.cpp
 
 $(IntermediateDirectory)/glcanvas.cpp$(ObjectSuffix): glcanvas.cpp $(IntermediateDirectory)/glcanvas.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/wxWidgets-3.1.0/build-linux-debug/samples/opengl/cube/glcanvas.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/glcanvas.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/cube/glcanvas.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/glcanvas.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/glcanvas.cpp$(DependSuffix): glcanvas.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/glcanvas.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/glcanvas.cpp$(DependSuffix) -MM glcanvas.cpp
 
@@ -109,7 +109,7 @@ $(IntermediateDirectory)/glcanvas.cpp$(PreprocessSuffix): glcanvas.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/glcanvas.cpp$(PreprocessSuffix) glcanvas.cpp
 
 $(IntermediateDirectory)/glx11.cpp$(ObjectSuffix): glx11.cpp $(IntermediateDirectory)/glx11.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/wxWidgets-3.1.0/build-linux-debug/samples/opengl/cube/glx11.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/glx11.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/cube/glx11.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/glx11.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/glx11.cpp$(DependSuffix): glx11.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/glx11.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/glx11.cpp$(DependSuffix) -MM glx11.cpp
 
@@ -117,7 +117,7 @@ $(IntermediateDirectory)/glx11.cpp$(PreprocessSuffix): glx11.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/glx11.cpp$(PreprocessSuffix) glx11.cpp
 
 $(IntermediateDirectory)/GDKCanvas.cpp$(ObjectSuffix): GDKCanvas.cpp $(IntermediateDirectory)/GDKCanvas.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/wxWidgets-3.1.0/build-linux-debug/samples/opengl/cube/GDKCanvas.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/GDKCanvas.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/cube/GDKCanvas.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/GDKCanvas.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/GDKCanvas.cpp$(DependSuffix): GDKCanvas.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/GDKCanvas.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/GDKCanvas.cpp$(DependSuffix) -MM GDKCanvas.cpp
 
