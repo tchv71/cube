@@ -614,10 +614,7 @@ bool wxGLCanvasEgl::InitVisual(const wxGLAttributes& dispAttrs)
 
 wxGLCanvasEgl::~wxGLCanvasEgl()
 {
-    if ( m_fbc && m_fbc != ms_glFBCInfo )
-        XFree(m_fbc);
-
-    if ( m_vi && m_vi != ms_glVisualInfo )
+     if ( m_vi && m_vi != ms_glVisualInfo )
         XFree(m_vi);
 }
 
