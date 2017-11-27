@@ -18,6 +18,7 @@
 #include "glx11.h"
 #else
 #include "GDKCanvas.h"
+#include "glEgl.h"
 #endif
 
 //---------------------------------------------------------------------------
@@ -29,7 +30,7 @@ typedef wxGLContextX11_ wxGLContextNew;
 class wxGLCanvasNew : public wxGLCanvasX11_
 #else
 typedef wxGLContextGdk wxGLContextNew;
-class wxGLCanvasNew : public wxGLCanvasGdkNew
+class wxGLCanvasNew : public wxGLCanvasEgl
 #endif
 {
 public:

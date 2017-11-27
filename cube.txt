@@ -1,1 +1,1 @@
-./Debug/cube.cpp.o ./Debug/glcanvas.cpp.o ./Debug/glx11.cpp.o ./Debug/GDKCanvas.cpp.o
+./Debug/cube.cpp.o ./Debug/glcanvas.cpp.o ./Debug/glx11.cpp.o ./Debug/GDKCanvas.cpp.o ./Debug/glEgl.cpp.o

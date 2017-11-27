@@ -12,12 +12,14 @@
     <File Name="glcanvas.cpp"/>
     <File Name="glx11.cpp"/>
     <File Name="GDKCanvas.cpp"/>
+    <File Name="glEgl.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="cube.h"/>
     <File Name="GDKCanvas.h"/>
     <File Name="glcanvas.h"/>
     <File Name="glx11.h"/>
+    <File Name="glEgl.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources"/>
   <Settings Type="Executable">
@@ -50,6 +52,7 @@
         <Library Value="gdk-3"/>
         <Library Value="cairo"/>
         <Library Value="gobject-2.0"/>
+        <Library Value="epoxy"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>

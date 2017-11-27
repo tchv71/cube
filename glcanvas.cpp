@@ -122,7 +122,7 @@ extern "C" {
 static gboolean
 parent_set_hook(GSignalInvocationHint*, guint, const GValue* param_values, void* data)
 {
-#ifndef WX_USE_GDK_GL_CONTEXT
+#if !defined(WX_USE_GDK_GL_CONTEXT) && !defined(_WX_UNIX_EGL_H_)
     wxGLCanvasNew* win = (wxGLCanvasNew*)data;
     if (g_value_peek_pointer(&param_values[0]) == win->m_wxwindow)
     {

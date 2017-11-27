@@ -11,16 +11,17 @@
 // ----------------------------------------------------------------------------
 
 class wxGLCanvasNew;
+class wxGLCanvasGdkNew;
 
 class wxGLContextGdk : public wxGLContextBase
 {
 public:
-    wxGLContextGdk(wxGLCanvasNew *win,
+    wxGLContextGdk(wxGLCanvasGdkNew *win,
                 const wxGLContextGdk *other = NULL,
                 const wxGLContextAttrs *ctxAttrs = NULL);
     virtual ~wxGLContextGdk();
 
-    virtual bool SetCurrent(const wxGLCanvasNew& win) const/* wxOVERRIDE*/;
+    virtual bool SetCurrent(const wxGLCanvasGdkNew& win) const/* wxOVERRIDE*/;
     virtual bool SetCurrent(const wxGLCanvas& win) const {}/* wxOVERRIDE*/;
 
 private:

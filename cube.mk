@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=tchv
-Date                   :=27.11.2017
+Date                   :=27/11/17
 CodeLitePath           :=/home/tchv/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -39,8 +39,8 @@ LinkOptions            :=  $(shell /usr/local/bin/wx-config --libs std,gl --stat
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)/usr/include $(IncludeSwitch)/usr/include/freetype2 $(IncludeSwitch)/usr/include/gtk-3.0 $(IncludeSwitch)/usr/lib/x86_64-linux-gnu/glib-2.0/include $(IncludeSwitch)/usr/include/glib-2.0 $(IncludeSwitch)/usr/include/pango-1.0 $(IncludeSwitch)/usr/include/cairo $(IncludeSwitch)/usr/include/gdk-pixbuf-2.0/ $(IncludeSwitch)/usr/include/atk-1.0 
 IncludePCH             := 
 RcIncludePath          := 
-Libs                   := $(LibrarySwitch)GL $(LibrarySwitch)X11 $(LibrarySwitch)gtk-3 $(LibrarySwitch)gdk-3 $(LibrarySwitch)cairo $(LibrarySwitch)gobject-2.0 
-ArLibs                 :=  "GL" "X11" "gtk-3" "gdk-3" "cairo" "gobject-2.0" 
+Libs                   := $(LibrarySwitch)GL $(LibrarySwitch)X11 $(LibrarySwitch)gtk-3 $(LibrarySwitch)gdk-3 $(LibrarySwitch)cairo $(LibrarySwitch)gobject-2.0 $(LibrarySwitch)epoxy 
+ArLibs                 :=  "GL" "X11" "gtk-3" "gdk-3" "cairo" "gobject-2.0" "epoxy" 
 LibPath                := $(LibraryPathSwitch). 
 
 ##
@@ -61,7 +61,7 @@ AS       := /usr/bin/as
 ##
 CodeLiteDir:=/usr/share/codelite
 GDK_GL:=legacy
-Objects0=$(IntermediateDirectory)/cube.cpp$(ObjectSuffix) $(IntermediateDirectory)/glcanvas.cpp$(ObjectSuffix) $(IntermediateDirectory)/glx11.cpp$(ObjectSuffix) $(IntermediateDirectory)/GDKCanvas.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/cube.cpp$(ObjectSuffix) $(IntermediateDirectory)/glcanvas.cpp$(ObjectSuffix) $(IntermediateDirectory)/glx11.cpp$(ObjectSuffix) $(IntermediateDirectory)/GDKCanvas.cpp$(ObjectSuffix) $(IntermediateDirectory)/glEgl.cpp$(ObjectSuffix) 
 
 
 
@@ -123,6 +123,14 @@ $(IntermediateDirectory)/GDKCanvas.cpp$(DependSuffix): GDKCanvas.cpp
 
 $(IntermediateDirectory)/GDKCanvas.cpp$(PreprocessSuffix): GDKCanvas.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/GDKCanvas.cpp$(PreprocessSuffix) GDKCanvas.cpp
+
+$(IntermediateDirectory)/glEgl.cpp$(ObjectSuffix): glEgl.cpp $(IntermediateDirectory)/glEgl.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/tchv/cube/glEgl.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/glEgl.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/glEgl.cpp$(DependSuffix): glEgl.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/glEgl.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/glEgl.cpp$(DependSuffix) -MM glEgl.cpp
+
+$(IntermediateDirectory)/glEgl.cpp$(PreprocessSuffix): glEgl.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/glEgl.cpp$(PreprocessSuffix) glEgl.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

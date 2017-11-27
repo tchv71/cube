@@ -15,7 +15,7 @@
 
 wxIMPLEMENT_CLASS(wxGLContextGdk, wxObject);
 
-wxGLContextGdk::wxGLContextGdk(wxGLCanvasNew* win, const wxGLContextGdk* other, const wxGLContextAttrs* ctxAttrs)
+wxGLContextGdk::wxGLContextGdk(wxGLCanvasGdkNew* win, const wxGLContextGdk* other, const wxGLContextAttrs* ctxAttrs)
     : m_glContext(NULL)
 {
     GtkWidget* widget = win->m_widget;
@@ -37,7 +37,7 @@ wxGLContextGdk::~wxGLContextGdk()
     g_clear_object(&m_glContext);
 }
 
-bool wxGLContextGdk::SetCurrent(const wxGLCanvasNew& win) const
+bool wxGLContextGdk::SetCurrent(const wxGLCanvasGdkNew& win) const
 {
     if(!m_glContext)
     {
@@ -57,7 +57,7 @@ bool wxGLContextGdk::SetCurrent(const wxGLCanvasNew& win) const
     {
         int i=0;
     }
-    const_cast<wxGLCanvasNew&>(win).attach_buffers();
+    const_cast<wxGLCanvasGdkNew&>(win).attach_buffers();
 }
 
 
