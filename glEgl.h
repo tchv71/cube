@@ -12,9 +12,8 @@
 
 #include <EGL/egl.h>
 #include <gtk-3.0/gdk/gdkwayland.h>
+#include <wayland-egl.h>
 
-class wxEGLContextAttrs;
-class wxEGLAttributes;
 
 //typedef wxEGLAttributes wxGLAttributes;
 
@@ -24,7 +23,7 @@ class wxGLCanvasNew;
 // wxEGLContextAttrs: OpenGL rendering context attributes
 // ----------------------------------------------------------------------------
 
-class WXDLLIMPEXP_GL wxEGLContextAttrs : public wxGLAttribsBase
+class WXDLLIMPEXP_GL wxEGLContextAttrs : public wxGLContextAttrs
 {
 public:
     // Setters, allowing chained calls
@@ -95,16 +94,17 @@ public:
 
     virtual bool SetCurrent(const wxGLCanvasNew& win) const/* wxOVERRIDE*/;
     virtual bool SetCurrent(const wxGLCanvas& win) const {}/* wxOVERRIDE*/;
+    static EGLDisplay GetEglDisplay(GdkWindow* window) ;
 
 private:
     // attach context to the drawable or unset it (if NULL)
-    static bool MakeCurrent(GLXDrawable drawable, GLXContext context);
+    //static bool MakeCurrent(GLXDrawable drawable, GLXContext context);
 
-    GLXContext m_glContext;
+    EGLContext m_glContext;
 
     wxDECLARE_CLASS(wxGLContextEgl);
 private:
-    static EGLDisplay GetEglDisplay (GdkWaylandDisplay *display_wayland);
+    static EGLDisplay CreateEglDisplay (GdkWaylandDisplay *display_wayland);
     static gboolean InitGl (GdkDisplay *display);
     static bool have_egl;
     static EGLDisplay egl_display;
@@ -125,7 +125,7 @@ public:
     wxGLCanvasEgl();
 
     // initializes GLXFBConfig and XVisualInfo corresponding to the given attributes
-    bool InitVisual(const wxGLAttributes& dispAttrs);
+    bool InitVisual(const wxGLAttributes& dispAttrs, GdkWindow* window);
 
     // frees XVisualInfo info
     virtual ~wxGLCanvasEgl();
@@ -137,21 +137,6 @@ public:
     virtual bool SwapBuffers() wxOVERRIDE;
 
 
-    // X11-specific methods
-    // --------------------
-
-    // return GLX version: 13 means 1.3 &c
-    static int GetGLXVersion();
-
-    // return true if multisample extension is available
-    static bool IsGLXMultiSampleAvailable();
-
-    // get the X11 handle of this window
-    //virtual Window GetXWindow() const = 0;
-
-
-    // GLX-specific methods
-    // --------------------
 
     // override some wxWindow methods
     // ------------------------------
@@ -164,30 +149,13 @@ public:
     // implementation only from now on
     // -------------------------------
 
-    // get the GLXFBConfig/XVisualInfo we use
-    //GLXFBConfig *GetGLXFBConfig() const { return m_fbc; }
-    //XVisualInfo *GetXVisualInfo() const { return m_vi; }
-    EGLConfig GetEglConfig() { return m_eglConfig; } 
-
-    // initialize the global default GL visual, return false if matching visual
-    // not found
-    //static bool InitDefaultVisualInfo(const int *attribList);
-
-    // get the default GL X11 visual (may be NULL, shouldn't be freed by caller)
-    //static XVisualInfo *GetDefaultXVisualInfo() { return ms_glVisualInfo; }
-
-    // free the global GL visual, called by wxGLApp
-    //static void FreeDefaultVisualInfo();
-
-    // initializes XVisualInfo (in any case) and, if supported, GLXFBConfig
-    //
-    // returns false if XVisualInfo couldn't be initialized, otherwise caller
-    // is responsible for freeing the pointers
-    // static bool InitXVisualInfo(const wxGLAttributes& dispAttrs,
-    //                             GLXFBConfig **pFBC, XVisualInfo **pXVisual);
-
+    EGLConfig GetEglConfig() { return egl_config; } 
+    bool SetCurrentContext(EGLContext ctx) const;
 private:
-    EGLConfig m_eglConfig;
+    void EnsureEglWindowAndSurface();
+    EGLConfig egl_config;
+    EGLSurface egl_surface;
+    struct wl_egl_window* egl_window; 
 };
 
 // ----------------------------------------------------------------------------

@@ -29,7 +29,7 @@
 typedef wxGLContextX11_ wxGLContextNew;
 class wxGLCanvasNew : public wxGLCanvasX11_
 #else
-typedef wxGLContextGdk wxGLContextNew;
+typedef wxGLContextEgl wxGLContextNew;
 class wxGLCanvasNew : public wxGLCanvasEgl
 #endif
 {

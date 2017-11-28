@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=tchv
-Date                   :=27/11/17
+Date                   :=28.11.2017
 CodeLitePath           :=/home/tchv/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -39,8 +39,8 @@ LinkOptions            :=  $(shell /usr/local/bin/wx-config --libs std,gl --stat
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)/usr/include $(IncludeSwitch)/usr/include/freetype2 $(IncludeSwitch)/usr/include/gtk-3.0 $(IncludeSwitch)/usr/lib/x86_64-linux-gnu/glib-2.0/include $(IncludeSwitch)/usr/include/glib-2.0 $(IncludeSwitch)/usr/include/pango-1.0 $(IncludeSwitch)/usr/include/cairo $(IncludeSwitch)/usr/include/gdk-pixbuf-2.0/ $(IncludeSwitch)/usr/include/atk-1.0 
 IncludePCH             := 
 RcIncludePath          := 
-Libs                   := $(LibrarySwitch)GL $(LibrarySwitch)X11 $(LibrarySwitch)gtk-3 $(LibrarySwitch)gdk-3 $(LibrarySwitch)cairo $(LibrarySwitch)gobject-2.0 $(LibrarySwitch)epoxy 
-ArLibs                 :=  "GL" "X11" "gtk-3" "gdk-3" "cairo" "gobject-2.0" "epoxy" 
+Libs                   := $(LibrarySwitch)GL $(LibrarySwitch)X11 $(LibrarySwitch)gtk-3 $(LibrarySwitch)gdk-3 $(LibrarySwitch)cairo $(LibrarySwitch)gobject-2.0 $(LibrarySwitch)epoxy $(LibrarySwitch)wayland-egl $(LibrarySwitch)wayland-client 
+ArLibs                 :=  "GL" "X11" "gtk-3" "gdk-3" "cairo" "gobject-2.0" "epoxy" "wayland-egl" "wayland-client" 
 LibPath                := $(LibraryPathSwitch). 
 
 ##

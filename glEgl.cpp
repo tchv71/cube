@@ -20,7 +20,7 @@
 
 #if wxUSE_GLCANVAS
 #ifndef WX_PRECOMP
-    #include "wx/log.h"
+#include "wx/log.h"
 #endif //WX_PRECOMP
 
 #include <epoxy/egl.h>
@@ -45,8 +45,7 @@ wxEGLContextAttrs& wxEGLContextAttrs::CoreProfile()
 
 wxEGLContextAttrs& wxEGLContextAttrs::MajorVersion(int val)
 {
-    if ( val > 0 )
-    {
+    if ( val > 0 ) {
         AddAttribute(EGL_CONTEXT_MAJOR_VERSION_KHR);
         AddAttribute(val);
         if ( val >= 3 )
@@ -57,8 +56,7 @@ wxEGLContextAttrs& wxEGLContextAttrs::MajorVersion(int val)
 
 wxEGLContextAttrs& wxEGLContextAttrs::MinorVersion(int val)
 {
-    if ( val >= 0 )
-    {
+    if ( val >= 0 ) {
         AddAttribute(EGL_CONTEXT_MINOR_VERSION_KHR);
         AddAttribute(val);
     }
@@ -149,7 +147,7 @@ wxEGLContextAttrs& wxEGLContextAttrs::PlatformDefaults()
 
 void wxEGLContextAttrs::EndList()
 {
-    AddAttribute(0);
+    AddAttribute(EGL_NONE);
 }
 
 // ----------------------------------------------------------------------------
@@ -175,15 +173,16 @@ wxEGLAttributes& wxEGLAttributes::RGBA()
 //        AddAttribBits(GLX_RENDER_TYPE, GLX_RGBA_BIT);
 //    else
 //        AddAttribute(GLX_RGBA);
-    AddAttribBits(EGL_SURFACE_TYPE, EGL_WINDOW_BIT);
-    AddAttribBits(EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER);
+    AddAttribute(EGL_SURFACE_TYPE);
+    AddAttribute(EGL_WINDOW_BIT);
+    AddAttribute(EGL_COLOR_BUFFER_TYPE);
+    AddAttribute(EGL_RGB_BUFFER);
     return *this;
 }
 
 wxEGLAttributes& wxEGLAttributes::BufferSize(int val)
 {
-    if ( val >= 0 )
-    {
+    if ( val >= 0 ) {
         AddAttribute(EGL_BUFFER_SIZE);
         AddAttribute(val);
     }
@@ -225,23 +224,19 @@ wxEGLAttributes& wxEGLAttributes::AuxBuffers(int val)
 
 wxEGLAttributes& wxEGLAttributes::MinRGBA(int mRed, int mGreen, int mBlue, int mAlpha)
 {
-    if ( mRed >= 0)
-    {
+    if ( mRed >= 0) {
         AddAttribute(EGL_RED_SIZE);
         AddAttribute(mRed);
     }
-    if ( mGreen >= 0)
-    {
+    if ( mGreen >= 0) {
         AddAttribute(EGL_GREEN_SIZE);
         AddAttribute(mGreen);
     }
-    if ( mBlue >= 0)
-    {
+    if ( mBlue >= 0) {
         AddAttribute(EGL_BLUE_SIZE);
         AddAttribute(mBlue);
     }
-    if ( mAlpha >= 0)
-    {
+    if ( mAlpha >= 0) {
         AddAttribute(EGL_ALPHA_SIZE);
         AddAttribute(mAlpha);
     }
@@ -250,8 +245,7 @@ wxEGLAttributes& wxEGLAttributes::MinRGBA(int mRed, int mGreen, int mBlue, int m
 
 wxEGLAttributes& wxEGLAttributes::Depth(int val)
 {
-    if ( val >= 0 )
-    {
+    if ( val >= 0 ) {
         AddAttribute(EGL_DEPTH_SIZE);
         AddAttribute(val);
     }
@@ -260,8 +254,7 @@ wxEGLAttributes& wxEGLAttributes::Depth(int val)
 
 wxEGLAttributes& wxEGLAttributes::Stencil(int val)
 {
-    if ( val >= 0 )
-    {
+    if ( val >= 0 ) {
         AddAttribute(EGL_STENCIL_SIZE);
         AddAttribute(val);
     }
@@ -316,7 +309,7 @@ wxEGLAttributes& wxEGLAttributes::FrameBuffersRGB()
 
 void wxEGLAttributes::EndList()
 {
-    AddAttribute(0);
+    AddAttribute(EGL_NONE);
 }
 
 wxEGLAttributes& wxEGLAttributes::PlatformDefaults()
@@ -327,7 +320,9 @@ wxEGLAttributes& wxEGLAttributes::PlatformDefaults()
 
 wxEGLAttributes& wxEGLAttributes::Defaults()
 {
-    RGBA().DoubleBuffer().Depth(16).SampleBuffers(1).Samplers(4);
+    //RGBA().DoubleBuffer().Depth(16).SampleBuffers(1).Samplers(4);
+    RGBA().MinRGBA(8,8,8,-1);
+    EndList();
     return *this;
 }
 
@@ -335,8 +330,7 @@ void wxEGLAttributes::AddDefaultsForWXBefore31()
 {
     // ParseAttribList() will add EndList(), don't do it now
     DoubleBuffer();
-    if ( wxGLCanvasEgl::GetGLXVersion() < 13 )
-        RGBA().Depth(1).MinRGBA(1, 1, 1, 0);
+    RGBA().Depth(1).MinRGBA(1, 1, 1, 0);
     // For GLX >= 1.3 its defaults (GLX_RGBA_BIT and GLX_WINDOW_BIT) are OK
 }
 
@@ -345,95 +339,99 @@ void wxEGLAttributes::AddDefaultsForWXBefore31()
 // wxGLContextEgl implementation
 // ============================================================================
 
-EGLDisplay wxGLContextEgl::GetEglDisplay (GdkWaylandDisplay *display_wayland)
+EGLDisplay wxGLContextEgl::CreateEglDisplay (GdkWaylandDisplay *display_wayland)
 {
-  EGLDisplay dpy = NULL;
-  struct wl_display* disp_wayland = gdk_wayland_display_get_wl_display(display_wayland);
-  if (epoxy_has_egl_extension (NULL, "EGL_KHR_platform_base"))
-    {
-      PFNEGLGETPLATFORMDISPLAYPROC getPlatformDisplay = (PFNEGLGETPLATFORMDISPLAYPROC)eglGetProcAddress ("eglGetPlatformDisplay");
+    EGLDisplay dpy = NULL;
+    struct wl_display* disp_wayland = gdk_wayland_display_get_wl_display(display_wayland);
+    if (epoxy_has_egl_extension (NULL, "EGL_KHR_platform_base")) {
+        PFNEGLGETPLATFORMDISPLAYPROC getPlatformDisplay = (PFNEGLGETPLATFORMDISPLAYPROC)eglGetProcAddress ("eglGetPlatformDisplay");
 
-      if (getPlatformDisplay)
-	dpy = getPlatformDisplay (EGL_PLATFORM_WAYLAND_EXT,
-				  disp_wayland,
-				  NULL);
-      if (dpy)
-	return dpy;
+        if (getPlatformDisplay)
+            dpy = getPlatformDisplay (EGL_PLATFORM_WAYLAND_EXT,
+                                      disp_wayland,
+                                      NULL);
+        if (dpy)
+            return dpy;
     }
 
-  if (epoxy_has_egl_extension (NULL, "EGL_EXT_platform_base"))
-    {
-      PFNEGLGETPLATFORMDISPLAYEXTPROC getPlatformDisplay =
-	(PFNEGLGETPLATFORMDISPLAYEXTPROC) eglGetProcAddress ("eglGetPlatformDisplayEXT");
+    if (epoxy_has_egl_extension (NULL, "EGL_EXT_platform_base")) {
+        PFNEGLGETPLATFORMDISPLAYEXTPROC getPlatformDisplay =
+            (PFNEGLGETPLATFORMDISPLAYEXTPROC) eglGetProcAddress ("eglGetPlatformDisplayEXT");
 
-      if (getPlatformDisplay)
-	dpy = getPlatformDisplay (EGL_PLATFORM_WAYLAND_EXT,
-				  disp_wayland,
-				  NULL);
-      if (dpy)
-	return dpy;
+        if (getPlatformDisplay)
+            dpy = getPlatformDisplay (EGL_PLATFORM_WAYLAND_EXT,
+                                      disp_wayland,
+                                      NULL);
+        if (dpy)
+            return dpy;
     }
 
-  return eglGetDisplay ((EGLNativeDisplayType) disp_wayland);
+    return eglGetDisplay ((EGLNativeDisplayType) disp_wayland);
 }
 
-bool wxGLContextEgl::have_egl = true;
+bool wxGLContextEgl::have_egl = false;
 EGLDisplay wxGLContextEgl::egl_display;
 
 
 gboolean wxGLContextEgl::InitGl (GdkDisplay *display)
 {
-  GdkWaylandDisplay *display_wayland = GDK_WAYLAND_DISPLAY (display);
-  EGLint major, minor;
-  EGLDisplay dpy;
+    GdkWaylandDisplay *display_wayland = GDK_WAYLAND_DISPLAY (display);
+    EGLint major, minor;
+    EGLDisplay dpy;
 
-  if (have_egl)
+    if (have_egl)
+        return TRUE;
+
+    if (!display_wayland)
+    {
+	display_wayland = GDK_WAYLAND_DISPLAY (gdk_window_get_display(gdk_get_default_root_window()));
+    }
+    dpy = CreateEglDisplay (display_wayland);
+
+    if (dpy == NULL)
+	return FALSE;
+    if (!eglInitialize (dpy, &major, &minor))
+    {
+	EGLint err = eglGetError();
+        return FALSE;
+    }
+
+    if (!eglBindAPI (EGL_OPENGL_API))
+        return FALSE;
+
+    egl_display = dpy;
+    //display_wayland->egl_major_version = major;
+    //display_wayland->egl_minor_version = minor;
+
+    have_egl = true;
+
+    /*  display_wayland->have_egl_khr_create_context =
+        epoxy_has_egl_extension (dpy, "EGL_KHR_create_context");
+
+      display_wayland->have_egl_buffer_age =
+        epoxy_has_egl_extension (dpy, "EGL_EXT_buffer_age");
+
+      display_wayland->have_egl_swap_buffers_with_damage =
+        epoxy_has_egl_extension (dpy, "EGL_EXT_swap_buffers_with_damage");
+
+      display_wayland->have_egl_surfaceless_context =
+        epoxy_has_egl_extension (dpy, "EGL_KHR_surfaceless_context");
+
+      GDK_NOTE (OPENGL,
+                g_message ("EGL API version %d.%d found\n"
+                           " - Vendor: %s\n"
+                           " - Version: %s\n"
+                           " - Client APIs: %s\n"
+                           " - Extensions:\n"
+                           "\t%s",
+                           display_wayland->egl_major_version,
+                           display_wayland->egl_minor_version,
+                           eglQueryString (dpy, EGL_VENDOR),
+                           eglQueryString (dpy, EGL_VERSION),
+                           eglQueryString (dpy, EGL_CLIENT_APIS),
+                           eglQueryString (dpy, EGL_EXTENSIONS)));
+    */
     return TRUE;
-
-  dpy = GetEglDisplay (display_wayland);
-
-  if (dpy == NULL)
-    return FALSE;
-
-  if (!eglInitialize (dpy, &major, &minor))
-    return FALSE;
-
-  if (!eglBindAPI (EGL_OPENGL_API))
-    return FALSE;
-
-  egl_display = dpy;
-  //display_wayland->egl_major_version = major;
-  //display_wayland->egl_minor_version = minor;
-
-  have_egl = true;
-
-/*  display_wayland->have_egl_khr_create_context =
-    epoxy_has_egl_extension (dpy, "EGL_KHR_create_context");
-
-  display_wayland->have_egl_buffer_age =
-    epoxy_has_egl_extension (dpy, "EGL_EXT_buffer_age");
-
-  display_wayland->have_egl_swap_buffers_with_damage =
-    epoxy_has_egl_extension (dpy, "EGL_EXT_swap_buffers_with_damage");
-
-  display_wayland->have_egl_surfaceless_context =
-    epoxy_has_egl_extension (dpy, "EGL_KHR_surfaceless_context");
-
-  GDK_NOTE (OPENGL,
-            g_message ("EGL API version %d.%d found\n"
-                       " - Vendor: %s\n"
-                       " - Version: %s\n"
-                       " - Client APIs: %s\n"
-                       " - Extensions:\n"
-                       "\t%s",
-                       display_wayland->egl_major_version,
-                       display_wayland->egl_minor_version,
-                       eglQueryString (dpy, EGL_VENDOR),
-                       eglQueryString (dpy, EGL_VERSION),
-                       eglQueryString (dpy, EGL_CLIENT_APIS),
-                       eglQueryString (dpy, EGL_EXTENSIONS)));
-*/
-  return TRUE;
 }
 
 static bool g_ctxErrorOccurred = false;
@@ -441,116 +439,52 @@ static bool g_ctxErrorOccurred = false;
 wxIMPLEMENT_CLASS(wxGLContextEgl, wxObject);
 
 wxGLContextEgl::wxGLContextEgl(wxGLCanvasNew *win,
-                         const wxGLContextEgl *other,
-                         const wxEGLContextAttrs *ctxAttrs)
+                               const wxGLContextEgl *other,
+                               const wxEGLContextAttrs *ctxAttrs)
     : m_glContext(NULL)
 {
     const int* contextAttribs = NULL;
     Bool x11Direct = True;
-    int renderType = GLX_RGBA_TYPE;
+    //int renderType = GLX_RGBA_TYPE;
     bool needsARB = false;
 
-    if ( ctxAttrs )
-    {
+    if ( ctxAttrs ) {
         contextAttribs = ctxAttrs->GetGLAttrs();
         x11Direct = ctxAttrs->x11Direct;
-        renderType = ctxAttrs->renderTypeRGBA ? GLX_RGBA_TYPE : GLX_COLOR_INDEX_TYPE;
+        //renderType = ctxAttrs->renderTypeRGBA ? GLX_RGBA_TYPE : GLX_COLOR_INDEX_TYPE;
         needsARB = ctxAttrs->NeedsARB();
-    }
-    else if ( win->GetGLCTXAttrs().GetGLAttrs() )
-    {
+    } else if ( win->GetGLCTXAttrs().GetGLAttrs() ) {
         // If OpenGL context parameters were set at wxGLCanvasNew ctor, get them now
         contextAttribs = win->GetGLCTXAttrs().GetGLAttrs();
         x11Direct = win->GetGLCTXAttrs().x11Direct;
-        renderType = win->GetGLCTXAttrs().renderTypeRGBA ? GLX_RGBA_TYPE : GLX_COLOR_INDEX_TYPE;
+        //renderType = win->GetGLCTXAttrs().renderTypeRGBA ? GLX_RGBA_TYPE : GLX_COLOR_INDEX_TYPE;
         needsARB = win->GetGLCTXAttrs().NeedsARB();
     }
     // else use GPU driver defaults and x11Direct renderType ones
 
     m_isOk = false;
-    
+
     GdkWindow* window = win->GTKGetDrawingWindow();
+    gboolean bRes = gdk_window_has_native(window);
     GdkDisplay *display = gdk_window_get_display (window);
     if (!GDK_IS_WAYLAND_DISPLAY(display))
         return;
     if (!InitGl(display))
         return;
-    EGLConfig config = win->GetEglConfig();
-    
-    Display* dpy = wxGetX11Display();
-    XVisualInfo *vi = win->GetXVisualInfo();
-    wxCHECK_RET( vi, "invalid visual for OpenGL" );
+    EGLConfig egl_config = win->GetEglConfig();
 
-    // We need to create a temporary context to get the
-    // glXCreateContextAttribsARB function
-    GLXContext tempContext = glXCreateContext(dpy, vi, NULL, x11Direct);
-    wxCHECK_RET(tempContext, "glXCreateContext failed" );
 
-    PFNGLXCREATECONTEXTATTRIBSARBPROC wx_glXCreateContextAttribsARB
-        = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
-        glXGetProcAddress((GLubyte *)"glXCreateContextAttribsARB");
+    eglBindAPI(EGL_OPENGL_API);
+    m_glContext =  eglCreateContext (egl_display,
+                                     egl_config,
+                                     other != NULL ? other->m_glContext
+                                     : EGL_NO_CONTEXT,
+                                     contextAttribs);
 
-    glXDestroyContext( dpy, tempContext );
-
-    // The preferred way is using glXCreateContextAttribsARB, even for old context
-    if ( !wx_glXCreateContextAttribsARB && needsARB ) // OpenGL 3 context creation
-    {
-        wxLogMessage(_("OpenGL 3.0 or later is not supported by the OpenGL driver."));
-        return;
-    }
-
-    // Install a X error handler, so as to the app doesn't exit (without
-    // even a warning) if GL >= 3.0 context creation fails
-    //g_ctxErrorOccurred = false;
-    //int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&CTXErrorHandler);
-
-    if ( wx_glXCreateContextAttribsARB )
-    {
-        GLXFBConfig *fbc = NULL;// win->GetGLXFBConfig();
-        wxCHECK_RET( fbc, "Invalid GLXFBConfig for OpenGL" );
-
-        m_glContext = wx_glXCreateContextAttribsARB( dpy, fbc[0],
-                                other ? other->m_glContext : None,
-                                x11Direct, contextAttribs );
-
-        // Some old hardware may accept the use of this ARB, but may fail.
-        // In case of NULL attributes we'll try creating the context old-way.
-        XSync( dpy, False );
-        if ( g_ctxErrorOccurred && (!contextAttribs || !needsARB) )
-        {
-            g_ctxErrorOccurred = false; //Reset
-            m_glContext = NULL;
-        }
-    }
-
-    if ( !g_ctxErrorOccurred && !m_glContext )
-    {
-        // Old-way, without context atributes. Up to GL 2.1
-/*        if ( wxGLCanvasNew::GetGLXVersion() >= 13 )
-        {
-            GLXFBConfig *fbc = win->GetGLXFBConfig();
-            wxCHECK_RET( fbc, "Invalid GLXFBConfig for OpenGL" );
-
-            m_glContext = glXCreateNewContext( dpy, fbc[0], renderType,
-                                               other ? other->m_glContext : None,
-                                               x11Direct );
-        }
-        else // GLX <= 1.2*/
-        {
-            m_glContext = glXCreateContext( dpy, vi,
-                                            other ? other->m_glContext : None,
-                                            x11Direct );
-        }
-    }
-
-    // Sync to ensure any errors generated are processed.
-    XSync( dpy, False );
-
-    if ( g_ctxErrorOccurred || !m_glContext )
+    if (!m_glContext )
         wxLogMessage(_("Couldn't create OpenGL context"));
     else
         m_isOk = true;
-
     // Restore old error handler
     //XSetErrorHandler( oldHandler );
 }
@@ -560,33 +494,24 @@ wxGLContextEgl::~wxGLContextEgl()
     if ( !m_glContext )
         return;
 
-    if ( m_glContext == glXGetCurrentContext() )
-        MakeCurrent(None, NULL);
+    if (eglGetCurrentContext () == m_glContext)
+        eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
-    glXDestroyContext( wxGetX11Display(), m_glContext );
+    eglDestroyContext (egl_display, m_glContext);
 }
 
 bool wxGLContextEgl::SetCurrent(const wxGLCanvasNew& win) const
 {
     if ( !m_glContext )
         return false;
-
-    return true;
-//    const Window xid = win.GetXWindow();
-//    wxCHECK2_MSG( xid, return false, wxT("window must be shown") );
-//
-//    return MakeCurrent(xid, m_glContext);
+    return win.SetCurrentContext(m_glContext);
 }
 
-// wrapper around glXMakeContextCurrent/glXMakeCurrent depending on GLX
-// version
-/* static */
-bool wxGLContextEgl::MakeCurrent(GLXDrawable drawable, GLXContext context)
+EGLDisplay wxGLContextEgl::GetEglDisplay(GdkWindow* window)
 {
-//    if (wxGLCanvasNew::GetGLXVersion() >= 13)
-//        return glXMakeContextCurrent( wxGetX11Display(), drawable, drawable, context);
-//    else // GLX <= 1.2 doesn't have glXMakeContextCurrent()
-//        return glXMakeCurrent( wxGetX11Display(), drawable, context);
+    GdkDisplay* display = gdk_window_get_display(window);
+    InitGl(display);
+    return egl_display;
 }
 
 // ============================================================================
@@ -597,25 +522,38 @@ bool wxGLContextEgl::MakeCurrent(GLXDrawable drawable, GLXContext context)
 // initialization methods and dtor
 // ----------------------------------------------------------------------------
 
-wxGLCanvasEgl::wxGLCanvasEgl()
+wxGLCanvasEgl::wxGLCanvasEgl() :
+    egl_config(NULL),
+    egl_surface(NULL),
+    egl_window(NULL)
 {
-    m_eglConfig = NULL;
 }
 
-bool wxGLCanvasEgl::InitVisual(const wxGLAttributes& dispAttrs)
+bool wxGLCanvasEgl::InitVisual(const wxGLAttributes& dispAttrs, GdkWindow* window)
 {
-    bool ret = InitXVisualInfo(dispAttrs, &m_fbc, &m_vi);
-    if ( !ret )
-    {
-        wxFAIL_MSG("Failed to get a XVisualInfo for the requested attributes.");
+    if (egl_config)
+	return true;
+    int count = 0;
+    const int* attrs = dispAttrs.GetGLAttrs();
+    EGLDisplay dpy = wxGLContextEgl::GetEglDisplay(window);
+    if (!eglChooseConfig (dpy, attrs, NULL, 0, &count) || count < 1) {
+	EGLint err = eglGetError();
+        wxFAIL_MSG("No available configurations for the given pixel format");
+        return false;
     }
-    return ret;
+    EGLConfig configs[count];
+    if (!eglChooseConfig (dpy, attrs, configs, count, &count) || count < 1) {
+        wxFAIL_MSG("No available configurations for the given pixel format");
+        return false;
+    }
+
+    /* Pick first valid configuration i guess? */
+    egl_config = configs[0];
+    return true;
 }
 
 wxGLCanvasEgl::~wxGLCanvasEgl()
 {
-     if ( m_vi && m_vi != ms_glVisualInfo )
-        XFree(m_vi);
 }
 
 // ----------------------------------------------------------------------------
@@ -623,58 +561,6 @@ wxGLCanvasEgl::~wxGLCanvasEgl()
 // ----------------------------------------------------------------------------
 
 
-
-/* static */
-bool wxGLCanvasEgl::IsGLXMultiSampleAvailable()
-{
-    static int s_isMultiSampleAvailable = -1;
-    if ( s_isMultiSampleAvailable == -1 )
-        s_isMultiSampleAvailable = IsExtensionSupported("GLX_ARB_multisample");
-
-    return s_isMultiSampleAvailable != 0;
-}
-
-
-/* static */
-bool wxGLCanvasEgl::InitXVisualInfo(const wxGLAttributes& dispAttrs,
-                                    GLXFBConfig** pFBC,
-                                    XVisualInfo** pXVisual)
-{
-    // GLX_XX attributes
-    const int* attrsListGLX = dispAttrs.GetGLAttrs();
-    if ( !attrsListGLX )
-    {
-        wxFAIL_MSG("wxEGLAttributes object is empty.");
-        return false;
-    }
-
-    Display* dpy = wxGetX11Display();
-
-    if ( GetGLXVersion() >= 13 )
-    {
-        int returned;
-        *pFBC = glXChooseFBConfig(dpy, DefaultScreen(dpy), attrsListGLX, &returned);
-
-        if ( *pFBC )
-        {
-            // Use the first good match
-            *pXVisual = glXGetVisualFromFBConfig(wxGetX11Display(), **pFBC);
-            if ( !*pXVisual )
-            {
-                XFree(*pFBC);
-                *pFBC = NULL;
-            }
-        }
-    }
-    else // GLX <= 1.2
-    {
-        *pFBC = NULL;
-        *pXVisual = glXChooseVisual(dpy, DefaultScreen(dpy),
-                                    const_cast<int*>(attrsListGLX) );
-    }
-
-    return *pXVisual != NULL;
-}
 
 #if 0
 /* static */
@@ -712,74 +598,45 @@ bool wxGLCanvasBase::IsExtensionSupported(const char *extension)
 }
 #endif
 
-// ----------------------------------------------------------------------------
-// default visual management
-// ----------------------------------------------------------------------------
-
-XVisualInfo *wxGLCanvasEgl::ms_glVisualInfo = NULL;
-GLXFBConfig *wxGLCanvasEgl::ms_glFBCInfo = NULL;
-
-/* static */
-bool wxGLCanvasEgl::InitDefaultVisualInfo(const int *attribList)
-{
-    FreeDefaultVisualInfo();
-    wxEGLAttributes dispAttrs;
-    ParseAttribList(attribList, dispAttrs);
-
-    return InitXVisualInfo(dispAttrs, &ms_glFBCInfo, &ms_glVisualInfo);
-}
-
-/* static */
-void wxGLCanvasEgl::FreeDefaultVisualInfo()
-{
-    if ( ms_glFBCInfo )
-    {
-        XFree(ms_glFBCInfo);
-        ms_glFBCInfo = NULL;
-    }
-
-    if ( ms_glVisualInfo )
-    {
-        XFree(ms_glVisualInfo);
-        ms_glVisualInfo = NULL;
-    }
-}
-
-// ----------------------------------------------------------------------------
-// other GL methods
-// ----------------------------------------------------------------------------
-
-/* static */
-int wxGLCanvasEgl::GetGLXVersion()
-{
-    static int s_glxVersion = 0;
-    if ( s_glxVersion == 0 )
-    {
-        // check the GLX version
-        int glxMajorVer, glxMinorVer;
-        bool ok = glXQueryVersion(wxGetX11Display(), &glxMajorVer, &glxMinorVer);
-        wxASSERT_MSG( ok, wxT("GLX version not found") );
-        if (!ok)
-            s_glxVersion = 10; // 1.0 by default
-        else
-            s_glxVersion = glxMajorVer*10 + glxMinorVer;
-    }
-
-    return s_glxVersion;
-}
 
 bool wxGLCanvasEgl::SwapBuffers()
 {
-    const Window xid = GetXWindow();
-    wxCHECK2_MSG( xid, return false, wxT("window must be shown") );
-
-    glXSwapBuffers(wxGetX11Display(), xid);
-    return true;
+    EnsureEglWindowAndSurface();
+    EGLDisplay dpy = wxGLContextEgl::GetEglDisplay(GTKGetDrawingWindow());
+    eglSwapInterval(dpy,0);
+    EGLBoolean bRes = eglSwapBuffers(dpy,egl_surface);
+    EGLint err = eglGetError();
+    return bRes;
 }
 
 bool wxGLCanvasEgl::IsShownOnScreen() const
 {
-    return GetXWindow() && wxGLCanvasBase::IsShownOnScreen();
+    return wxGLCanvasBase::IsShownOnScreen();
+}
+
+void wxGLCanvasEgl::EnsureEglWindowAndSurface()
+{
+    if (!egl_window) {
+        GdkWindow* window = GTKGetDrawingWindow();
+        int s = gdk_window_get_scale_factor(window);
+        int w = gdk_window_get_width(window)*s;
+        int h = gdk_window_get_height(window)*s;
+        GdkDisplay* display = gdk_window_get_display(window);
+        struct wl_compositor* compositor =  gdk_wayland_display_get_wl_compositor(display);
+        struct wl_surface* wl_surf = wl_compositor_create_surface(compositor);
+        egl_window = wl_egl_window_create(wl_surf,w,h);
+    }
+
+    if (!egl_surface) {
+        egl_surface = eglCreateWindowSurface (wxGLContextEgl::GetEglDisplay(GTKGetDrawingWindow()), egl_config, (EGLNativeWindowType)egl_window, NULL);
+	EGLint err = eglGetError();
+	int i=0;
+    }
+}
+
+bool wxGLCanvasEgl::SetCurrentContext(EGLContext ctx) const
+{
+    const_cast<wxGLCanvasEgl*>(this)->EnsureEglWindowAndSurface();
+    return eglMakeCurrent(wxGLContextEgl::GetEglDisplay(GTKGetDrawingWindow()),egl_surface,egl_surface,ctx);
 }
 #endif // wxUSE_GLCANVAS
-

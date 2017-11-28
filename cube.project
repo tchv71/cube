@@ -53,6 +53,8 @@
         <Library Value="cairo"/>
         <Library Value="gobject-2.0"/>
         <Library Value="epoxy"/>
+        <Library Value="wayland-egl"/>
+        <Library Value="wayland-client"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>

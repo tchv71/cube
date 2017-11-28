@@ -54,7 +54,7 @@ public:
     wxGLCanvasX11_();
 
     // initializes GLXFBConfig and XVisualInfo corresponding to the given attributes
-    bool InitVisual(const wxGLAttributes& dispAttrs);
+    bool InitVisual(const wxGLAttributes& dispAttrs, GdkWindow* window);
 
     // frees XVisualInfo info
     virtual ~wxGLCanvasX11_();

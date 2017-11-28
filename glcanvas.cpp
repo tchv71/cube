@@ -77,7 +77,7 @@ static gboolean draw(GtkWidget*, cairo_t* cr, wxGLCanvasNew* win)
     double x1, y1, x2, y2;
     cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
     win->GetUpdateRegion().Union(int(x1), int(y1), int(x2 - x1), int(y2 - y1));
-#if 1
+#if 0
     win->GTKSendPaintEvents(cr);
     //win->m_cairoPaintContext = NULL;
 #endif
@@ -246,9 +246,13 @@ bool wxGLCanvasNew::Create(wxWindow *parent,
 {
     // Separate 'GLXFBConfig/XVisual' attributes.
     // Also store context attributes for wxGLContextNew ctor
-    wxGLAttributes dispAttrs;
-    if ( ! ParseAttribList(attribList, dispAttrs, &m_GLCTXAttrs) )
-        return false;
+    wxEGLAttributes dispAttrs;
+    dispAttrs.Defaults();
+    wxEGLContextAttrs ctxAttrs;
+    ctxAttrs.CompatibilityProfile().MajorVersion(3).MinorVersion(0).EndList();
+    m_GLCTXAttrs = ctxAttrs;
+//    if ( ! ParseAttribList(attribList, dispAttrs, &m_GLCTXAttrs) )
+//        return false;
 
     return Create(parent, dispAttrs, id, pos, size, style, name, palette);
 }
@@ -275,8 +279,6 @@ bool wxGLCanvasNew::Create(wxWindow *parent,
     m_backgroundStyle = wxBG_STYLE_PAINT;
 #endif
 
-    if ( !InitVisual(dispAttrs) )
-        return false;
 
     // watch for the "parent-set" signal on m_wxwindow so we can set colormap
     // before m_wxwindow is realized (which will occur before
@@ -286,8 +288,12 @@ bool wxGLCanvasNew::Create(wxWindow *parent,
 
     wxWindow::Create( parent, id, pos, size, style, name );
 
-    //gtk_widget_set_double_buffered(m_wxwindow, false);
+    gtk_widget_set_double_buffered(m_wxwindow, false);
     gtk_widget_realize(m_wxwindow);
+    GdkWindow* window = GTKGetDrawingWindow();
+    gdk_window_ensure_native(window);
+    if ( !InitVisual(dispAttrs, GTKGetDrawingWindow()) )
+        return false;
 #if WXWIN_COMPATIBILITY_2_8
     g_signal_connect(m_wxwindow, "realize",       G_CALLBACK(gtk_glwindow_realized_callback), this);
 #endif // WXWIN_COMPATIBILITY_2_8
@@ -333,7 +339,7 @@ void wxGLCanvasNew::OnInternalIdle()
     if (m_exposed)
     {
 #ifdef __WXGTK3__
-//        GTKSendPaintEvents(m_cairoPaintContext);
+        GTKSendPaintEvents(m_cairoPaintContext);
         cairo_destroy(m_cairoPaintContext);
         m_cairoPaintContext = NULL;
 #else
