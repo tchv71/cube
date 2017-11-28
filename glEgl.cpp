@@ -621,10 +621,26 @@ void wxGLCanvasEgl::EnsureEglWindowAndSurface()
         int s = gdk_window_get_scale_factor(window);
         int w = gdk_window_get_width(window)*s;
         int h = gdk_window_get_height(window)*s;
+#if 0
         GdkDisplay* display = gdk_window_get_display(window);
         struct wl_compositor* compositor =  gdk_wayland_display_get_wl_compositor(display);
         struct wl_surface* wl_surf = wl_compositor_create_surface(compositor);
+        wl_region *region = wl_compositor_create_region(compositor);
+        wl_region_add(region,0,0,w,h);
+        wl_surface_set_opaque_region(wl_surf, region);
+#else
+        struct wl_surface* wl_surf = gdk_wayland_window_get_wl_surface(window);
+#if 0
+        GdkDisplay* display = gdk_window_get_display(window);
+        struct wl_compositor* compositor =  gdk_wayland_display_get_wl_compositor(display);
+        wl_region *region = wl_compositor_create_region(compositor);
+        wl_region_add(region,0,0,w,h);
+        //wl_surface_set_opaque_region(wl_surf, region);
+#endif
+#endif
         egl_window = wl_egl_window_create(wl_surf,w,h);
+        //wl_egl_window_resize(egl_window,w,h,0,0);
+        wl_surface_set_buffer_scale(wl_surf, s);
     }
 
     if (!egl_surface) {

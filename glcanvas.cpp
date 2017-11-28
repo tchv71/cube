@@ -291,7 +291,7 @@ bool wxGLCanvasNew::Create(wxWindow *parent,
     gtk_widget_set_double_buffered(m_wxwindow, false);
     gtk_widget_realize(m_wxwindow);
     GdkWindow* window = GTKGetDrawingWindow();
-    gdk_window_ensure_native(window);
+    //gdk_window_ensure_native(window);
     if ( !InitVisual(dispAttrs, GTKGetDrawingWindow()) )
         return false;
 #if WXWIN_COMPATIBILITY_2_8

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="cube" Database="" Version="10.0.0">
   <Project Name="cube" Path="cube.project" Active="Yes"/>
+  <Project Name="winEgl" Path="winEgl/winEgl.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
       <Project Name="cube" ConfigName="Debug"/>
+      <Project Name="winEgl" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
       <Project Name="cube" ConfigName="Release"/>
+      <Project Name="winEgl" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
