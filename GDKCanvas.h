@@ -43,7 +43,7 @@ public:
     // default ctor doesn't do anything, InitVisual() must be called
     wxGLCanvasGdkNew();
 
-    bool InitVisual(const wxGLAttributes& dispAttrs);
+    bool InitVisual(const wxGLAttributes& dispAttrs, GdkWindow* window);
 
     virtual ~wxGLCanvasGdkNew();
     XVisualInfo *GetXVisualInfo() const { return NULL; }

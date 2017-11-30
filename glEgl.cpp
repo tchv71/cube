@@ -438,7 +438,7 @@ static bool g_ctxErrorOccurred = false;
 
 wxIMPLEMENT_CLASS(wxGLContextEgl, wxObject);
 
-wxGLContextEgl::wxGLContextEgl(wxGLCanvasNew *win,
+wxGLContextEgl::wxGLContextEgl(wxGLCanvasEgl *win,
                                const wxGLContextEgl *other,
                                const wxEGLContextAttrs *ctxAttrs)
     : m_glContext(NULL)
@@ -500,7 +500,7 @@ wxGLContextEgl::~wxGLContextEgl()
     eglDestroyContext (egl_display, m_glContext);
 }
 
-bool wxGLContextEgl::SetCurrent(const wxGLCanvasNew& win) const
+bool wxGLContextEgl::SetCurrent(const wxGLCanvasEgl& win) const
 {
     if ( !m_glContext )
         return false;
@@ -614,6 +614,11 @@ bool wxGLCanvasEgl::IsShownOnScreen() const
     return wxGLCanvasBase::IsShownOnScreen();
 }
 
+EGLSurface
+gdk_wayland_window_get_egl_surface (GdkWindow *window,
+                                    EGLConfig  config);
+
+
 void wxGLCanvasEgl::EnsureEglWindowAndSurface()
 {
     if (!egl_window) {
@@ -630,12 +635,12 @@ void wxGLCanvasEgl::EnsureEglWindowAndSurface()
         wl_surface_set_opaque_region(wl_surf, region);
 #else
         struct wl_surface* wl_surf = gdk_wayland_window_get_wl_surface(window);
-#if 0
+#if 1
         GdkDisplay* display = gdk_window_get_display(window);
         struct wl_compositor* compositor =  gdk_wayland_display_get_wl_compositor(display);
         wl_region *region = wl_compositor_create_region(compositor);
         wl_region_add(region,0,0,w,h);
-        //wl_surface_set_opaque_region(wl_surf, region);
+        wl_surface_set_opaque_region(wl_surf, region);
 #endif
 #endif
         egl_window = wl_egl_window_create(wl_surf,w,h);

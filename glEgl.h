@@ -80,19 +80,19 @@ public:
     void AddDefaultsForWXBefore31();
 };
 
-
+class wxGLCanvasEgl;
 // ----------------------------------------------------------------------------
 // wxGLContextEgl
 // ----------------------------------------------------------------------------
 class WXDLLIMPEXP_GL wxGLContextEgl : public wxGLContextBase
 {
 public:
-    wxGLContextEgl(wxGLCanvasNew *win,
+    wxGLContextEgl(wxGLCanvasEgl *win,
                 const wxGLContextEgl *other = NULL,
                 const wxEGLContextAttrs *ctxAttrs = NULL);
     virtual ~wxGLContextEgl();
 
-    virtual bool SetCurrent(const wxGLCanvasNew& win) const/* wxOVERRIDE*/;
+    virtual bool SetCurrent(const wxGLCanvasEgl& win) const/* wxOVERRIDE*/;
     virtual bool SetCurrent(const wxGLCanvas& win) const {}/* wxOVERRIDE*/;
     static EGLDisplay GetEglDisplay(GdkWindow* window) ;
 

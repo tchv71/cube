@@ -172,40 +172,24 @@ bool wxGLCanvasGdkNew::SwapBuffers()
     status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status == GL_FRAMEBUFFER_COMPLETE)
     {
-        needs_render = FALSE;
-
-//        wxGLCanvasNew *pChild = dynamic_cast<wxGLCanvasNew*>(this);
-//        if (!pChild || !pChild->m_cairoPaintContext)
-//            return false;
-#if 0
-        cairo_t* cr;// = pChild->m_cairoPaintContext; //gdk_cairo_create(window);
-        GdkWindow* cr_window = gdk_gl_context_get_window(context);
-        //window = cr_window;
-        cairo_region_t* region = gdk_window_get_clip_region(window);
-        GdkDrawingContext* context = gdk_window_begin_draw_frame(window,region);
-        cr = gdk_drawing_context_get_cairo_context(context);//gdk_cairo_create(window);
-        gdk_cairo_draw_from_gl(cr, cr_window, render_buffer,
-                               GL_RENDERBUFFER, scale, 0, 0, w, h);
-        gdk_window_end_draw_frame(window,context);
-        cairo_region_destroy(region);
-        //cairo_destroy(cr);
-#else
-//        wxGLCanvasNew *pChild = dynamic_cast<wxGLCanvasNew*>(this);
-//        if (!pChild || !pChild->m_cairoPaintContext)
-//            return false;
-        cairo_t* cr = gdk_cairo_create(window);
+        wxGLCanvasNew *pChild = dynamic_cast<wxGLCanvasNew*>(this);
+        if (!pChild || !pChild->m_cairoPaintContext)
+	{
+	    gtk_widget_queue_draw(pChild->m_widget);
+	    gdk_window_process_updates(window,false);
+	    return true;
+	}
+        cairo_t* cr = pChild->m_cairoPaintContext; // gdk_cairo_create(window);
         GdkWindow* cr_window = gdk_gl_context_get_window(context);
         gdk_cairo_draw_from_gl(cr, cr_window, render_buffer,
                                GL_RENDERBUFFER, scale, 0, 0, w, h);
-        cairo_destroy(cr);
-#endif
         return true;
     }
     return false;
 }
 
 
-bool wxGLCanvasGdkNew::InitVisual(const wxGLAttributes& dispAttrs)
+bool wxGLCanvasGdkNew::InitVisual(const wxGLAttributes& dispAttrs, GdkWindow*)
 {
     return true;
 }

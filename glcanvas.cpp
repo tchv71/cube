@@ -64,6 +64,8 @@ gtk_glwindow_map_callback( GtkWidget * WXUNUSED(widget), wxGLCanvasNew *win )
 // "expose_event" of m_wxwindow
 //-----------------------------------------------------------------------------
 
+#define PAINT_SYNC
+
 extern "C" {
 #ifdef __WXGTK3__
 static gboolean draw(GtkWidget*, cairo_t* cr, wxGLCanvasNew* win)
@@ -72,14 +74,16 @@ static gboolean draw(GtkWidget*, cairo_t* cr, wxGLCanvasNew* win)
     if (win->m_cairoPaintContext == NULL)
     {
         win->m_cairoPaintContext = cr;
+#ifndef PAINT_SYNC
         cairo_reference(cr);
+#endif
     }
     double x1, y1, x2, y2;
     cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
     win->GetUpdateRegion().Union(int(x1), int(y1), int(x2 - x1), int(y2 - y1));
-#if 0
+#ifdef PAINT_SYNC
     win->GTKSendPaintEvents(cr);
-    //win->m_cairoPaintContext = NULL;
+    win->m_cairoPaintContext = NULL;
 #endif
     return false;
 }
@@ -288,7 +292,7 @@ bool wxGLCanvasNew::Create(wxWindow *parent,
 
     wxWindow::Create( parent, id, pos, size, style, name );
 
-    gtk_widget_set_double_buffered(m_wxwindow, false);
+    //gtk_widget_set_double_buffered(m_wxwindow, false);
     gtk_widget_realize(m_wxwindow);
     GdkWindow* window = GTKGetDrawingWindow();
     //gdk_window_ensure_native(window);
@@ -339,9 +343,11 @@ void wxGLCanvasNew::OnInternalIdle()
     if (m_exposed)
     {
 #ifdef __WXGTK3__
+#ifndef PAINT_SYNC
         GTKSendPaintEvents(m_cairoPaintContext);
         cairo_destroy(m_cairoPaintContext);
         m_cairoPaintContext = NULL;
+#endif
 #else
         wxPaintEvent event( GetId() );
         event.SetEventObject( this );
